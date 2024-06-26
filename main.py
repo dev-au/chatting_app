@@ -4,6 +4,8 @@ from tortoise.contrib.fastapi import register_tortoise
 
 from config import api_routes
 
+import routes
+
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
