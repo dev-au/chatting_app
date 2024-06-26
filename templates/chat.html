@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Interface</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="chatting-container">
+    <div class="chatting-header">
+        <h2 id="chatting-title">Chat with <span id="chatting-username">{{ username }}</span></h2>
+        <div id="user-status" class="status">Active</div>
+    </div>
+    <div class="chatting-messages" id="chatting-messages">
+        <div class="message-item sent read">Hello!</div>
+        <div class="message-item received">Hi there!</div>
+        <div class="message-item sent unread">How are you?</div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="message-input" placeholder="Type a message...">
+        <button>Send</button>
+    </div>
+</div>
+</body>
+</html>

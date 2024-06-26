@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <form class="signup-form">
+        <h2>Login</h2>
+        <p style="color: red" id="error"></p>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="button" onclick="submitForm()">Login</button>
+    </form>
+    <br>
+    <a href="/signup">Register as new user...</a>
+</div>
+
+<script>
+    const access_token = window.localStorage.getItem('access_token')
+    if (access_token) {
+        window.location.href = '/';
+    }
+
+    async function submitForm() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const error_message = document.getElementById('error')
+
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'grant_type': '',
+                    'username': username,
+                    'password': password,
+                    'scope': '',
+                    'client_id': '',
+                    'client_secret': ''
+                })
+            })
+            const result = await response.json()
+            if (!response.ok) {
+                error_message.textContent = result.detail;
+            } else {
+                window.localStorage.setItem('access_token', result.access_token)
+                window.location.href = '/'
+            }
+
+        } catch (error) {
+            console.error('Error:', error)
+        }
+    }
+</script>
+</body>
+</html>

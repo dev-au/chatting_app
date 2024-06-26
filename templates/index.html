@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatting App</title>
+    <link rel="stylesheet" href="/static/style2.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body onload="getChats()">
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <h2>Chats</h2>
+        <ul id="chat-list"></ul>
+    </div>
+    <div class="chatting-container">
+        <div class="chatting-header">
+            <h2 id="chatting-title">Chat with <span id="chatting-username">User</span></h2>
+            <div id="user-status" class="status">Active</div>
+        </div>
+        <div class="chatting-messages" id="chatting-messages">
+            <div class="message-item sent read">Hello!</div>
+            <div class="message-item received">Hi therejhghjgjhgh!</div>
+            <div class="message-item sent unread">How are you?</div>
+        </div>
+        <div class="chatting-input">
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const access_token = window.localStorage.getItem('access_token');
+    if (!access_token) {
+        window.location.href = '/login';
+    }
+
+    function checkAuth() {
+        const response = fetch('/api/check-auth', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + access_token
+            },
+        });
+        if (!response.ok) {
+            window.location.href = '/login';
+            if (access_token) {
+                window.localStorage.removeItem('access_token');
+            }
+        }
+    }
+
+    checkAuth()
+
+    async function getChats() {
+        try {
+            const response = await fetch('/api/get-all-chats', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + access_token
+                },
+            });
+            if (!response.ok) {
+                window.location.href = '/login';
+                if (access_token) {
+                    window.localStorage.removeItem('access_token');
+                }
+                return;
+            }
+            const result = await response.json();
+            displayChats(result.chats);
+        } catch (error) {
+            console.error('Error:', error);
+            window.location.href = '/login';
+        }
+    }
+
+    function displayChats(chats) {
+        const chatList = document.getElementById('chat-list');
+        chatList.innerHTML = '';
+        chats.forEach(chat => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `<a href="/chat/${chat.receiver}">${chat.receiver}</a>`;
+            chatList.appendChild(listItem);
+        });
+    }
+
+    function sendMessage() {
+        const messageInput = document.getElementById('message-input');
+        const messageText = messageInput.value.trim();
+        if (messageText === '') return;
+
+        const messageItem = document.createElement('div');
+        messageItem.classList.add('message-item', 'sent');
+        messageItem.innerHTML = messageText;
+
+        const chattingMessages = document.getElementById('chatting-messages');
+        chattingMessages.appendChild(messageItem);
+
+        // Clear input after sending message
+        messageInput.value = '';
+        messageInput.focus(); // Optional: keep focus on input after sending
+    }
+</script>
+
+</body>
+</html>
